@@ -1168,11 +1168,14 @@
                                         {{ $b->judul }}
                                     </div>
 
-                                    <div class="book-sub">
-                                        REF #{{ str_pad($b->id,4,'0',STR_PAD_LEFT) }}
-                                        •
-                                        <span>{{ $b->kategori }}</span>
-                                    </div>
+                            <div class="book-sub">
+    REF #{{ str_pad($b->id,4,'0',STR_PAD_LEFT) }}
+    •
+
+    <span>
+        {{ $b->kategori->nama_kategori ?? 'Tanpa Kategori' }}
+    </span>
+</div>
 
                                 </div>
 
@@ -1217,7 +1220,7 @@
                             </div>
 
                             <div class="book-sub">
-                                Tahun {{ $b->tahun_terbit }}
+                                Tahun {{ $b->tahun }}
                             </div>
 
                         </td>

@@ -203,7 +203,7 @@
                                     <button type="button" class="btn-action btn-reject" title="Tolak" onclick="confirmReject('{{ $p->id }}', '{{ $p->user->name }}')">
                                         <i class="ri-close-line"></i>
                                     </button>
-                                @elseif($st == 'dipinjam')
+                                @elseif($st == 'dipinjam' || $st == 'menunggu_kembali')
                                     <form action="{{ route('petugas.konfirmasi_kembali', $p->id) }}" method="POST" style="display: inline-block; margin: 0;">
                                         @csrf
                                         <button type="submit" class="status-pill status-diajukan" style="border: 1px solid #D4A373; cursor: pointer; font-family: inherit; font-size: 10px; font-weight: 800; padding: 8px 16px; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#D4A373', this.style.color='white'" onmouseout="this.style.background='#FFF9F2', this.style.color='#D4A373'">

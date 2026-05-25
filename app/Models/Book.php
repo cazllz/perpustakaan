@@ -6,32 +6,30 @@ use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
 {
+    protected $table = 'bukus';
+
     protected $fillable = [
         'judul',
         'penulis',
         'penerbit',
-        'tahun_terbit',
+        'tahun',
         'status',
         'cover',
         'rating',
         'stok',
-        'sinopsis' // 🔥 FIX DATA GA KEBAWAH: Wajib diubah jadi 'sinopsis' agar Eloquent mengizinkan data baru masuk ke tabel books!
+        'deskripsi',
+        'kategori_id'
     ];
 
-    // 🔥 RELASI ULASAN
+    // RELASI ULASAN
     public function ulasan()
     {
         return $this->hasMany(\App\Models\Ulasan::class, 'book_id');
     }
 
-    // 🔥 RELASI KATEGORI (WAJIB)
+    // RELASI KATEGORI
     public function kategori()
     {
-        return $this->belongsToMany(
-            \App\Models\Kategori::class,
-            'kategoribuku_relasi',
-            'id_buku',
-            'id_kategori'
-        );
+        return $this->belongsTo(\App\Models\Kategori::class, 'kategori_id');
     }
 }

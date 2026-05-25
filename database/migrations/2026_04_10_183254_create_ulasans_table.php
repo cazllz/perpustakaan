@@ -13,7 +13,7 @@ return new class extends Migration
             // Menghubungkan ulasan ke user (opsional, jika ingin tahu siapa yang mengulas)
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             // Menghubungkan ulasan ke buku
-            $table->foreignId('book_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('book_id')->constrained('bukus')->cascadeOnDelete();
             $table->text('komentar');
             $table->integer('rating')->default(5); // Tambahan rating untuk ulasan
             $table->timestamps();

@@ -13,7 +13,7 @@ return new class extends Migration
 
             // Relasi ke User & Book
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('book_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('book_id')->constrained('bukus')->cascadeOnDelete();
 
             $table->date('tanggal_pinjam');
             $table->date('tanggal_kembali');
@@ -22,7 +22,8 @@ return new class extends Migration
                 'pending',
                 'dipinjam',
                 'ditolak',
-                'dikembalikan'
+                'dikembalikan',
+                'menunggu_kembali'
             ])->default('pending');
 
             $table->timestamps();

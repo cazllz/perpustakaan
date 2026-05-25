@@ -155,19 +155,21 @@
 
         <div class="info-content">
             <div class="info-card">
-                <span class="tag-kategori">{{ $book->kategori ?? 'Sastra' }}</span>
+               <span class="tag-kategori">
+    {{ $book->kategori->nama_kategori ?? 'Sastra' }}
+</span>
                 <h1 class="title">{{ $book->judul }}</h1>
                 <p class="author">Karya {{ $book->penulis }}</p>
 
                 <div class="meta-grid">
                     <div class="meta-item"><span>Penerbit</span><p>{{ $book->penerbit }}</p></div>
-                    <div class="meta-item"><span>Tahun Terbit</span><p>{{ $book->tahun_terbit }}</p></div>
+                    <div class="meta-item"><span>Tahun Terbit</span><p>{{ $book->tahun }}</p></div>
                     <div class="meta-item"><span>Rating Buku</span><p>⭐ {{ $displayRating }}/5</p></div>
                 </div>
 
                 <div class="sinopsis">
                     <h4 style="font-weight: 800; margin-bottom: 15px;">Sinopsis</h4>
-                    <p class="sinopsis-text">{!! nl2br(e($book->sinopsis)) !!}</p>
+                  <p class="sinopsis-text">{!! nl2br(e($book->deskripsi)) !!}</p>
                 </div>
             </div>
 

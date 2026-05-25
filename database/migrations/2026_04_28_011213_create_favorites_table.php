@@ -13,7 +13,7 @@ return new class extends Migration
 
             // Relasi ke user & buku
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('book_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('book_id')->constrained('bukus')->cascadeOnDelete();
 
             $table->timestamps();
 

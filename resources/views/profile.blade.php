@@ -708,7 +708,6 @@
         nav,
         header,
         .section-label,
-        .review-master-card,
         .btn-action-luxe,
         .modal-overlay,
         footer,
@@ -719,8 +718,17 @@
         .loan-status-card,
         .profile-hero,
         h3,
-        .notif-review-banner {
+        .notif-review-banner,
+        .book-header-box,
+        .rating-body-box,
+        .notif-review-banner,
+        .review-master-card {
             display: none !important;
+        }
+
+        /* Tampilkan wrapper cetak yang aktif meski parent-nya di-hide */
+        .print-receipt-wrapper.active-print-wrapper {
+            display: block !important;
         }
 
         .app-viewport {
@@ -996,7 +1004,7 @@
     @if($bukuBelumDiulas)
         <div class="notif-review-banner">
             <div>
-                <h4>Buku Telah Kembali! 📚</h4>
+                <h4>Buku Telah Kembali! </h4>
                 <p>Bagikan impresi serta nilai kepuasan membacamu untuk buku <b>"{{ $bukuBelumDiulas->book->judul }}"</b> sekarang.</p>
             </div>
             <i class="ri-message-3-line" style="font-size: 36px; color: var(--accent); opacity: 0.8;"></i>
@@ -1019,14 +1027,22 @@
                         <h4 style="font-weight: 800; margin:0; font-size: 19px; letter-spacing: -0.5px;">{{ $r->book->judul }}</h4>
                         <p style="color: var(--accent); font-weight: 700; margin: 4px 0 0 0; font-size: 14px;">oleh {{ $r->book->penulis }}</p>
                     </div>
-                    <div style="text-align: right;">
-                        <span style="font-size: 11px; color: #A89C90; font-weight: 800; background: #FAF7F4; border: 1px solid #EFEAE4; padding: 6px 14px; border-radius: 10px; font-family: 'JetBrains Mono'; display: block; margin-bottom: 5px;">
-                            TRX: #BRW-{{ $r->id }}
-                        </span>
-                        <small style="font-size: 11px; font-weight: 700; color: #A89C90; display: block;"><i class="ri-calendar-check-line"></i> {{ date('d M Y', strtotime($r->tanggal_kembali)) }}</small>
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="text-align: right;">
+                            <span style="font-size: 11px; color: #A89C90; font-weight: 800; background: #FAF7F4; border: 1px solid #EFEAE4; padding: 6px 14px; border-radius: 10px; font-family: 'JetBrains Mono'; display: block; margin-bottom: 5px;">
+                                TRX: #BRW-{{ $r->id }}
+                            </span>
+                            <small style="font-size: 11px; font-weight: 700; color: #A89C90; display: block;"><i class="ri-calendar-check-line"></i> {{ date('d M Y', strtotime($r->tanggal_kembali)) }}</small>
+                        </div>
+                        {{-- TOMBOL CETAK BUKTI PENGEMBALIAN --}}
+                        <button onclick="triggerReceiptPrint('print-return-{{ $r->id }}')" class="btn-action-luxe btn-pdf" style="white-space:nowrap;">
+                            <i class="ri-printer-fill"></i> Bukti Kembali
+                        </button>
                     </div>
                 </div>
             </div>
+
+
 
             <div class="rating-body-box">
                 @if($sudahUlas)
@@ -1088,6 +1104,41 @@
     @empty
         <p style="text-align: center; opacity: 0.4; padding: 40px;">Belum ada riwayat buku yang selesai dibaca.</p>
     @endforelse
+
+    {{-- SEMUA TEMPLATE CETAK BUKTI PENGEMBALIAN (di luar loop agar tidak ter-hide CSS print) --}}
+    @foreach($riwayat->where('status','dikembalikan') as $r)
+    <div id="print-return-{{ $r->id }}" class="print-receipt-wrapper">
+        <h1>Oase Sastra.</h1>
+        <p class="desc">Bukti Pengembalian Buku</p>
+        <div class="receipt-grid-content">
+            <div class="print-book-info">
+                <img src="{{ asset('storage/'.$r->book->cover) }}">
+            </div>
+            <div>
+                <table class="receipt-details-table">
+                    <tr><td class="label-receipt">No. Transaksi</td><td>: <span style="font-weight:800;">#BRW-{{ str_pad($r->id,5,'0',STR_PAD_LEFT) }}</span></td></tr>
+                    <tr><td class="label-receipt">Peminjam</td><td>: <span style="font-size:11pt; font-weight:800;">{{ $user->name }}</span></td></tr>
+                    <tr><td class="label-receipt">Judul Koleksi</td><td>: <span style="font-size:11pt; font-weight:800;">{{ $r->book->judul }}</span></td></tr>
+                    <tr><td class="label-receipt">Karya Penulis</td><td>: {{ $r->book->penulis }}</td></tr>
+                    <tr><td class="label-receipt">Penerbit</td><td>: {{ $r->book->penerbit ?? '-' }}</td></tr>
+                    <tr><td class="label-receipt">Tanggal Pinjam</td><td>: {{ date('d F Y', strtotime($r->tanggal_pinjam)) }}</td></tr>
+                    <tr><td class="label-receipt">Tanggal Kembali</td><td>: {{ date('d F Y', strtotime($r->tanggal_kembali)) }}</td></tr>
+                    <tr><td class="label-receipt">Status</td><td>: <div class="print-status-lock">✓ DIKEMBALIKAN</div></td></tr>
+                </table>
+                <div class="receipt-footer-signature">
+                    <div class="signature-box">
+                        <p>Peminjam,</p>
+                        <div class="signature-line">{{ $user->name }}</div>
+                    </div>
+                    <div class="signature-box">
+                        <p>Petugas Perpustakaan,</p>
+                        <div class="signature-line">____________________</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
 </div>
 
 <div class="modal-overlay" id="modalEdit">

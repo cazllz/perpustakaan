@@ -13,20 +13,13 @@ class PeminjamanController extends Controller
         // VALIDASI
         $request->validate([
             'tanggal_pinjam' => 'required|date',
-            'tanggal_kembali' => 'required|date|after:tanggal_pinjam'
+            'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam'
         ]);
 
-        // 🔥 CEK STOK BUKU TERLEBIH DAHULU (Tetap dicek agar user tidak bisa apply jika barang kosong)
+        // CEK STOK BUKU TERLEBIH DAHULU
         $buku = Book::findOrFail($id);
         if ($buku->stok <= 0) {
             return back()->with('error', 'Maaf, stok buku ini sedang habis!');
-        }
-
-        // MAX 7 HARI
-        $diff = (strtotime($request->tanggal_kembali) - strtotime($request->tanggal_pinjam)) / (60 * 60 * 24);
-
-        if ($diff > 7) {
-            return back()->with('error', 'Maksimal peminjaman hanya 7 hari!');
         }
 
         // CEK MASIH PINJAM (STATUS DIPINJAM)

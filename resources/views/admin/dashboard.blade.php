@@ -454,23 +454,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const ctx = document.getElementById('chartPremium').getContext('2d');
 
-    const gradient = ctx.createLinearGradient(0,0,0,300);
-
-    gradient.addColorStop(0,'rgba(212,163,115,0.25)');
+    const gradient = ctx.createLinearGradient(0,0,0,280);
+    gradient.addColorStop(0,'rgba(62,44,35,0.18)');
+    gradient.addColorStop(0.5,'rgba(212,163,115,0.08)');
     gradient.addColorStop(1,'rgba(212,163,115,0)');
 
     new Chart(ctx,{
         type:'line',
         data:{
-            labels:{!! json_encode($chart->pluck('bulan')) !!},
+            labels:{!! json_encode($chart->labels) !!},
             datasets:[{
-                data:{!! json_encode($chart->pluck('total')) !!},
+                data:{!! json_encode($chart->data) !!},
                 borderColor:'#3e2c23',
-                borderWidth:4,
+                borderWidth:3,
                 fill:true,
                 backgroundColor:gradient,
                 tension:.45,
-                pointRadius:0,
+                pointRadius:4,
+                pointBackgroundColor:'#3e2c23',
+                pointBorderColor:'#fff',
+                pointBorderWidth:2,
                 pointHoverRadius:7,
                 pointHoverBackgroundColor:'#d4a373',
                 pointHoverBorderColor:'#fff',

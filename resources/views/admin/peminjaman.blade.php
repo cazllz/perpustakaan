@@ -477,7 +477,7 @@
                                         <i class="ri-close-line"></i>
                                     </button>
 
-                                @elseif($st == 'dipinjam')
+                                @elseif($st == 'dipinjam' || $st == 'menunggu_kembali')
 
                                     <form action="{{ route($prefix . '.konfirmasi_kembali', $p->id) }}" method="POST" style="display: inline-block; margin: 0;">
                                         @csrf

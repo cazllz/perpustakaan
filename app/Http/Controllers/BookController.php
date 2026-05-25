@@ -86,9 +86,9 @@ class BookController extends Controller
     public function koleksi()
     {
         $data = DB::table('favorites')
-            ->join('books', 'favorites.book_id', '=', 'books.id')
+            ->join('bukus', 'favorites.book_id', '=', 'bukus.id')
             ->where('favorites.user_id', auth()->id())
-            ->select('books.*', 'favorites.id as fav_id') // fav_id sebagai kunci hapus
+            ->select('bukus.*', 'favorites.id as fav_id') // fav_id sebagai kunci hapus
             ->latest('favorites.created_at')
             ->get();
 
@@ -164,7 +164,7 @@ class BookController extends Controller
         }
 
         Ulasan::create([
-            'nama' => auth()->user()->name,
+            'user_id' => auth()->id(),
             'komentar' => $request->komentar,
             'rating' => $request->rating,
             'book_id' => $id
@@ -191,10 +191,9 @@ class BookController extends Controller
         return back()->with('success', '⭐ Rating berhasil diberikan!');
     }
 
-    // 🔥 SECURITY MURNI: Mengubah status sirkulasi menjadi 'menunggu_kembali' tanpa menyentuh angka stok database
     public function kembalikan($id)
     {
-        $pinjam = Peminjaman::where('book_id', $id)
+        $pinjam = Peminjaman::where('id', $id)
             ->where('user_id', auth()->id())
             ->where('status', 'dipinjam')
             ->first();
@@ -221,7 +220,7 @@ class BookController extends Controller
                   ->orWhere('penulis', 'like', '%' . $search . '%');
         }
 
-        $books = $query->latest()->get();
+        $books = $query->with('kategori')->latest()->get();
 
         return view('admin.buku', compact('books'));
     }
@@ -238,7 +237,7 @@ class BookController extends Controller
             'judul' => 'required|string|max:255',
             'penulis' => 'required|string|max:255',
             'penerbit' => 'required|string|max:255',
-            'tahun_terbit' => 'required|integer|min:1000|max:' . date('Y'),
+            'tahun' => 'required|integer|min:1000|max:' . date('Y'),
             'kategori_id' => 'required|integer',
             'deskripsi' => 'nullable|string',
             'cover' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
@@ -255,7 +254,7 @@ class BookController extends Controller
             'judul' => $request->judul,
             'penulis' => $request->penulis,
             'penerbit' => $request->penerbit,
-            'tahun_terbit' => $request->tahun_terbit,
+            'tahun' => $request->tahun,
             'kategori_id' => $request->kategori_id,
             'deskripsi' => $request->deskripsi,
             'cover' => $coverName,

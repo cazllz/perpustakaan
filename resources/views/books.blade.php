@@ -309,11 +309,11 @@
         <div class="filter-scroll">
             <a href="/books" class="chip {{ request('kategori') ? '' : 'chip-active' }}">Semua Koleksi</a>
             
-            @foreach($kategoris as $k)
-                <a href="/books?kategori={{ $k->nama_kategori }}" class="chip {{ request('kategori') == $k->nama_kategori ? 'chip-active' : '' }}">
-                    {{ $k->nama_kategori }}
-                </a>
-            @endforeach
+           @foreach($kategoris ?? [] as $kategori)
+    <a href="/books?kategori={{ $kategori->nama_kategori }}" class="chip {{ request('kategori') == $kategori->nama_kategori ? 'chip-active' : '' }}">
+        {{ $kategori->nama_kategori }}
+    </a>
+@endforeach
         </div>
     </div>
 
@@ -326,7 +326,9 @@
 
             <div class="book-details" style="display:flex; flex-direction:column; justify-content:space-between; flex:1;">
                 <div>
-                    <span class="category-badge">{{ $book->kategori }}</span>
+                    <span class="category-badge">
+    {{ $book->kategoriData->nama_kategori ?? 'Tanpa Kategori' }}
+</span>
                     <h3>{{ $book->judul }}</h3>
                     <div class="author">by {{ $book->penulis }}</div>
                     <div class="meta-info">

@@ -12,8 +12,8 @@ class Ulasan extends Model
     protected $table = 'ulasans'; // Nama tabel di database kamu
 
     protected $fillable = [
-        'nama',     // Sesuai screenshot phpMyAdmin (isi: bilqiss)
-        'komentar', // Sesuai screenshot phpMyAdmin (isi: sangat superduper...)
+        'user_id',  // FK ke tabel users
+        'komentar',
         'book_id',
         'rating' 
     ];

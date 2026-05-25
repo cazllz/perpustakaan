@@ -166,7 +166,7 @@
         <div class="book-summary">
             <img src="{{ asset('storage/' . $book->cover) }}" class="summary-cover" onerror="this.src='https://via.placeholder.com/100x140'">
             <div class="summary-info">
-                <span class="badge-category">{{ $book->kategori }}</span>
+                <span class="badge-category">{{ $book->kategori->nama_kategori ?? 'Umum' }}</span>
                 <h3 style="margin:0; font-size: 20px; font-weight: 800;">{{ $book->judul }}</h3>
                 <p style="margin:5px 0; color: var(--accent); font-weight: 700;">oleh {{ $book->penulis }}</p>
             </div>
@@ -212,36 +212,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const tglKembali = document.getElementById('tgl_kembali');
     const loanForm = document.getElementById('loanForm');
 
-    // CEK STATUS DARI DATABASE (Via Model Laravel)
     const masihPending = {{ \App\Models\Peminjaman::where('user_id', auth()->id())->where('status', 'pending')->exists() ? 'true' : 'false' }};
     const masihPinjam = {{ \App\Models\Peminjaman::where('user_id', auth()->id())->where('status', 'dipinjam')->exists() ? 'true' : 'false' }};
     const currentUserName = "{{ auth()->user()->name }}";
 
-    // Inisialisasi Tanggal
+    // Set default tanggal pinjam = hari ini
     let today = new Date().toISOString().split('T')[0];
-    tglPinjam.setAttribute('min', today);
     tglPinjam.value = today;
 
-    function hitungBatas(startDateStr) {
-        let start = new Date(startDateStr);
-        let minReturn = new Date(start);
-        minReturn.setDate(minReturn.getDate() + 1);
-        let maxReturn = new Date(start);
-        maxReturn.setDate(maxReturn.getDate() + 7);
-
-        tglKembali.setAttribute('min', minReturn.toISOString().split('T')[0]);
-        tglKembali.setAttribute('max', maxReturn.toISOString().split('T')[0]);
-        tglKembali.value = maxReturn.toISOString().split('T')[0];
-    }
-
-    hitungBatas(today);
-
-    tglPinjam.addEventListener('change', function() {
-        hitungBatas(this.value);
-    });
+    // Set default tanggal kembali = 7 hari dari sekarang
+    let defaultReturn = new Date();
+    defaultReturn.setDate(defaultReturn.getDate() + 7);
+    tglKembali.value = defaultReturn.toISOString().split('T')[0];
 
     loanForm.addEventListener('submit', function(e) {
-        // 1. CEK JIKA MASIH ADA PENGAJUAN PENDING
+        // CEK JIKA MASIH ADA PENGAJUAN PENDING
         if (masihPending) {
             e.preventDefault();
             Swal.fire({
@@ -254,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 2. CEK JIKA MASIH MEMBAWA BUKU
+        // CEK JIKA MASIH MEMBAWA BUKU
         if (masihPinjam) {
             e.preventDefault();
             Swal.fire({
@@ -267,25 +252,33 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 3. VALIDASI DURASI TANGGAL
+        // VALIDASI: tanggal kembali harus setelah tanggal pinjam
         let start = new Date(tglPinjam.value);
         let end = new Date(tglKembali.value);
-        let selisih = (end - start) / (1000 * 60 * 60 * 24);
 
-        if (selisih > 7 || selisih <= 0) {
+        if (!tglPinjam.value || !tglKembali.value) {
             e.preventDefault();
             Swal.fire({
                 icon: 'error',
-                title: 'Tanggal Tidak Valid',
-                text: 'Durasi peminjaman minimal 1 hari dan maksimal 7 hari.',
+                title: 'Tanggal Belum Diisi',
+                text: 'Harap isi tanggal pinjam dan tanggal kembali.',
                 confirmButtonColor: '#2c1f17',
                 customClass: { popup: 'oase-popup' }
             });
             return;
         }
 
-        // 🔥 FORM SUBMIT SECARA ALAMI KE BACKEND
-        // Tidak ada SweetAlert sukses buatan di sini. Pop-up sukses murni di-handle tunggal oleh layouts.app setelah refresh halaman.
+        if (end <= start) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Tanggal Tidak Valid',
+                text: 'Tanggal kembali harus setelah tanggal pinjam.',
+                confirmButtonColor: '#2c1f17',
+                customClass: { popup: 'oase-popup' }
+            });
+            return;
+        }
     });
 });
 </script>

@@ -163,7 +163,7 @@
 
                         <div class="form-group">
                             <label class="form-label-premium">Tahun Terbit</label>
-                            <input type="number" name="tahun" class="form-input-premium" value="{{ $book->tahun_terbit }}" required>
+                            <input type="number" name="tahun" class="form-input-premium" value="{{ $book->tahun }}" required>
                         </div>
 
                         <div class="form-group">

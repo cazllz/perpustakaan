@@ -26,14 +26,27 @@ class AdminController extends Controller
         // 🔥 PERBAIKAN: Mengubah status dari 'diajukan' menjadi 'pending' agar sesuai dengan status di database kamu
         $pending = Peminjaman::where('status', 'pending')->count();
 
-        // Data Bulanan untuk Grafik
-        $chart = Peminjaman::select(
-            DB::raw('DATE_FORMAT(created_at, "%b") as bulan'),
+        // Data Bulanan untuk Grafik - 6 bulan terakhir selalu ditampilkan
+        $rawChart = Peminjaman::select(
+            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as bulan_sort'),
+            DB::raw('DATE_FORMAT(created_at, "%b %Y") as bulan'),
             DB::raw('count(*) as total')
         )
-        ->groupBy('bulan')
-        ->orderBy('created_at', 'asc')
-        ->get();
+        ->groupBy('bulan_sort', 'bulan')
+        ->orderBy('bulan_sort', 'asc')
+        ->get()
+        ->keyBy('bulan_sort');
+
+        // Generate 6 bulan terakhir
+        $chartLabels = [];
+        $chartData = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $key = now()->subMonths($i)->format('Y-m');
+            $label = now()->subMonths($i)->format('M');
+            $chartLabels[] = $label;
+            $chartData[] = $rawChart->has($key) ? $rawChart[$key]->total : 0;
+        }
+        $chart = (object)['labels' => $chartLabels, 'data' => $chartData];
 
         // 🔥 KUNCI UTAMA: Memastikan relasi 'book' ikut dipanggil
         $peminjamans = Peminjaman::with(['user', 'book'])->latest()->take(5)->get();
@@ -96,19 +109,18 @@ class AdminController extends Controller
 
     public function simpanBuku(Request $request)
     {
-        // Tetap memvalidasi input 'deskripsi' bawaan form Blade kamu
         $request->validate([
-            'judul' => 'required',
-            'penulis' => 'required',
-            'deskripsi' => 'nullable|string',
-            'cover' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+            'judul'      => 'required',
+            'penulis'    => 'required',
+            'penerbit'   => 'required',
+            'tahun'      => 'required|integer',
+            'stok'       => 'required|integer|min:0',
+            'kategori_id'=> 'required|integer',
+            'deskripsi'  => 'nullable|string',
+            'cover'      => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
         ]);
 
-        $data = $request->all();
-
-        // 🔥 JEMBATAN OTOMATIS: Mengubah kunci 'deskripsi' form menjadi 'sinopsis' database
-        $data['sinopsis'] = $request->deskripsi;
-        unset($data['deskripsi']); // Buang kunci deskripsi lama agar tidak bikin eror MySQL
+        $data = $request->only(['judul', 'penulis', 'penerbit', 'tahun', 'stok', 'kategori_id', 'deskripsi']);
 
         if ($request->hasFile('cover')) {
             $data['cover'] = $request->file('cover')->store('covers', 'public');
@@ -129,20 +141,19 @@ class AdminController extends Controller
 
     public function updateBuku(Request $request, $id)
     {
-        // Tetap memvalidasi input 'deskripsi' bawaan form Blade kamu
         $request->validate([
-            'judul' => 'required',
-            'penulis' => 'required',
-            'deskripsi' => 'nullable|string',
-            'cover' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+            'judul'      => 'required',
+            'penulis'    => 'required',
+            'penerbit'   => 'required',
+            'tahun'      => 'required|integer',
+            'stok'       => 'required|integer|min:0',
+            'kategori_id'=> 'required|integer',
+            'deskripsi'  => 'nullable|string',
+            'cover'      => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
         ]);
 
         $book = Book::findOrFail($id);
-        $data = $request->all();
-
-        // 🔥 JEMBATAN OTOMATIS: Mengubah kunci 'deskripsi' form menjadi 'sinopsis' database sebelum update
-        $data['sinopsis'] = $request->deskripsi;
-        unset($data['deskripsi']); // Hapus deskripsi agar tidak memicu Unknown column 'deskripsi'
+        $data = $request->only(['judul', 'penulis', 'penerbit', 'tahun', 'stok', 'kategori_id', 'deskripsi']);
 
         if ($request->hasFile('cover')) {
             if ($book->cover) {
