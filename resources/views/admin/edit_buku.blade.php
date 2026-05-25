@@ -133,6 +133,17 @@
             <p style="color: #A89C90; font-size: 14px; font-weight: 500; margin-top: 4px; margin-bottom: 0;">Memperbarui arsip: <b style="color: #2C1F17;">{{ $book->judul }}</b></p>
         </div>
 
+        @if($errors->any())
+        <div style="background:#fff0f0; border:1px solid #e74c3c; border-radius:16px; padding:20px 25px; margin-bottom:25px;">
+            <b style="color:#e74c3c;">Gagal menyimpan, ada kesalahan:</b>
+            <ul style="margin:10px 0 0; padding-left:20px; color:#c0392b;">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
         <form action="{{ url($prefix . '/buku/update/' . $book->id) }}" method="POST" enctype="multipart/form-data" id="editBookForm">
             @csrf
             @method('PUT')

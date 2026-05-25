@@ -22,10 +22,13 @@ class BookController extends Controller
             $query->where('judul', 'like', '%' . $search . '%');
         }
         if ($kategori) {
-            $query->where('kategori', $kategori);
+            $kat = Kategori::where('nama_kategori', $kategori)->first();
+            if ($kat) {
+                $query->where('kategori_id', $kat->id);
+            }
         }
 
-        $books = $query->latest()->get();
+        $books = $query->with('kategori')->latest()->get();
 
         // Ambil data kategori agar muncul secara dinamis di dashboard user
         $kategoris = Kategori::all();
@@ -35,10 +38,16 @@ class BookController extends Controller
 
     public function kategori($nama)
     {
-        $books = Book::where('kategori', $nama)->latest()->get();
+        // Cari kategori by nama dulu, lalu filter by kategori_id
+        $kat = \App\Models\Kategori::where('nama_kategori', $nama)->first();
+        
+        if (!$kat) {
+            $books = collect();
+        } else {
+            $books = Book::where('kategori_id', $kat->id)->latest()->get();
+        }
 
-        // Ambil kategori juga di sini agar navigasi kategori tetap muncul
-        $kategoris = Kategori::all();
+        $kategoris = \App\Models\Kategori::all();
 
         return view('books', compact('books', 'kategoris'));
     }

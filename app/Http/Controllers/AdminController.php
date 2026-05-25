@@ -117,7 +117,7 @@ class AdminController extends Controller
             'stok'       => 'required|integer|min:0',
             'kategori_id'=> 'required|integer',
             'deskripsi'  => 'nullable|string',
-            'cover'      => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+            'cover'      => 'nullable|image|mimes:jpg,png,jpeg,webp|max:2048'
         ]);
 
         $data = $request->only(['judul', 'penulis', 'penerbit', 'tahun', 'stok', 'kategori_id', 'deskripsi']);
@@ -149,7 +149,7 @@ class AdminController extends Controller
             'stok'       => 'required|integer|min:0',
             'kategori_id'=> 'required|integer',
             'deskripsi'  => 'nullable|string',
-            'cover'      => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+            'cover'      => 'nullable|image|mimes:jpg,png,jpeg,webp|max:2048'
         ]);
 
         $book = Book::findOrFail($id);

@@ -133,6 +133,17 @@
             <p style="color: #A89C90; font-size: 14px; font-weight: 500; margin-top: 4px; margin-bottom: 0;">Mendaftarkan data koleksi baru ke dalam sistem.</p>
         </div>
 
+        @if($errors->any())
+        <div style="background:#fff0f0; border:1px solid #e74c3c; border-radius:16px; padding:20px 25px; margin-bottom:25px;">
+            <b style="color:#e74c3c;">Gagal menyimpan:</b>
+            <ul style="margin:10px 0 0; padding-left:20px; color:#c0392b;">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
         <form action="{{ route($prefix . '.buku.simpan') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-layout-nexus">
@@ -206,7 +217,7 @@
                         <label for="coverInput" style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; text-align:center; padding:13px; background:#FDF9F4; color:#2C1F17; border-radius:14px; font-size:11px; font-weight:800; cursor:pointer; border:1.5px solid rgba(212, 163, 115, 0.25); transition: 0.3s; box-sizing: border-box;">
                             <i class="ri-upload-cloud-2-line" style="font-size: 14px; color:#D4A373;"></i> CARI FILE GAMBAR
                         </label>
-                        <input type="file" name="cover" id="coverInput" accept="image/*" style="display:none;" required>
+                        <input type="file" name="cover" id="coverInput" accept="image/*" style="display:none;">
                     </div>
                 </div>
             </div>

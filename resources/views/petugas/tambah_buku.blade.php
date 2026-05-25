@@ -173,7 +173,7 @@
                         <label for="coverInput" style="display:block; width:100%; text-align:center; padding:16px; background:#FDF9F4; color:#2C1F17; border-radius:18px; font-size:11px; font-weight:800; cursor:pointer; border:1.5px solid rgba(62, 44, 35, 0.08); transition: 0.3s;">
                             PILIH FILE GAMBAR
                         </label>
-                        <input type="file" name="cover" id="coverInput" accept="image/*" style="display:none;" required>
+                        <input type="file" name="cover" id="coverInput" accept="image/*" style="display:none;">
                     </div>
                 </div>
 

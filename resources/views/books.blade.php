@@ -327,7 +327,7 @@
             <div class="book-details" style="display:flex; flex-direction:column; justify-content:space-between; flex:1;">
                 <div>
                     <span class="category-badge">
-    {{ $book->kategoriData->nama_kategori ?? 'Tanpa Kategori' }}
+    {{ $book->kategori->nama_kategori ?? 'Tanpa Kategori' }}
 </span>
                     <h3>{{ $book->judul }}</h3>
                     <div class="author">by {{ $book->penulis }}</div>
